@@ -29,7 +29,7 @@ jobs:
 
     - name: Deploy to Azure Web App
       run: |
-    az webapp config container set \
+        az webapp config container set \
       --name ${{ secrets.AZURE_WEBAPP_NAME }} \
       --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
       --docker-custom-image-name ${{ secrets.REGISTRY_NAME }}.azurecr.io/todo-app:latest \
