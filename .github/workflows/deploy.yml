@@ -1,37 +1,37 @@
-name: Build and Deploy to Azure
+name: build-and-deploy
 
 on:
   push:
     branches:
-      - main  # or your branch name
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Log in to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Log in to ACR
-      run: |
-        az acr login --name sakshicicd
+      - name: Log in to ACR
+        run: |
+          az acr login --name ${{ secrets.REGISTRY_NAME }}
 
-    - name: Build and Push Docker image
-      run: |
-        docker build -t sakshicicd.azurecr.io/node-todo-app:latest .
-        docker push sakshicicd.azurecr.io/node-todo-app:latest
+      - name: Build and Push Docker image
+        run: |
+          docker build -t ${{ secrets.REGISTRY_NAME }}.azurecr.io/todo-app:latest .
+          docker push ${{ secrets.REGISTRY_NAME }}.azurecr.io/todo-app:latest
 
-    - name: Deploy to Azure Web App
-      run: |
-        az webapp config container set \
-      --name ${{ secrets.AZURE_WEBAPP_NAME }} \
-      --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-      --docker-custom-image-name ${{ secrets.REGISTRY_NAME }}.azurecr.io/todo-app:latest \
-      --docker-registry-server-url https://${{ secrets.REGISTRY_NAME }}.azurecr.io
+      - name: Deploy to Azure Web App
+        run: |
+          az webapp config container set \
+            --name ${{ secrets.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --docker-custom-image-name ${{ secrets.REGISTRY_NAME }}.azurecr.io/todo-app:latest \
+            --docker-registry-server-url https://${{ secrets.REGISTRY_NAME }}.azurecr.io
 
