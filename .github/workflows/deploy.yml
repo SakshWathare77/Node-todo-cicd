@@ -29,10 +29,9 @@ jobs:
 
     - name: Deploy to Azure Web App
       run: |
-        az webapp config container set \
-          --name todo-app \
-          --resource-group CICDgroup \
-          --container-image-name sakshicicd.azurecr.io/node-todo-app:latest \
-          --container-registry-url https://sakshicicd.azurecr.io \
-          --container-registry-username sakshicicd \
-          --container-registry-password ${{ secrets.AZURE_CONTAINER_PASSWORD }}
+    az webapp config container set \
+      --name ${{ secrets.AZURE_WEBAPP_NAME }} \
+      --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+      --docker-custom-image-name ${{ secrets.REGISTRY_NAME }}.azurecr.io/todo-app:latest \
+      --docker-registry-server-url https://${{ secrets.REGISTRY_NAME }}.azurecr.io
+
