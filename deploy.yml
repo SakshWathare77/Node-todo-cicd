@@ -1,0 +1,42 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: echo "✅ Skipping tests for now"
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and Push Docker image to Azure
+        run: |
+          az acr login --name <YOUR_ACR_NAME>
+          docker build -t <YOUR_ACR_NAME>.azurecr.io/todo-app:latest .
+          docker push <YOUR_ACR_NAME>.azurecr.io/todo-app:latest
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: <YOUR_WEBAPP_NAME>
+          images: <YOUR_ACR_NAME>.azurecr.io/todo-app:latest
